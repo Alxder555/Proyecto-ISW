@@ -3,7 +3,7 @@ import * as kitService from '../services/kit.service.js';
 export const crearKit = async (req, res, next) => {
     try {
         const kit = await kitService.crearKit(req.body);
-        return res.status.json(kit);
+        return res.status(200).json(kit);
     } catch (error) {
         next(error);
     }

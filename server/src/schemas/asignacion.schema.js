@@ -11,7 +11,7 @@ const detalleEquipoSchema = z.object({
 export const crearAsignacionSchema = z.object({
     trabajoId: z.number().int().positive('El id del trabajo es requerido'),
     kitId: z.number().int().positive('El id del kit es requerido'),
-    detalles: z.array(detalleEquipoSchema).min('Debes especificar el estado de al menos un equipo'),
+    detalles: z.array(detalleEquipoSchema).min(1, { error: 'Debes especificar el estado de al menos un equipo' }),
 });
 
 const detalleDevolucionSchema = z.object({
@@ -21,7 +21,7 @@ const detalleDevolucionSchema = z.object({
 })
 
 export const registrarDevolucionSchema = z.object({
-    detalles: z.array(detalleDevolucionSchema).min(1, 'Debes especificar el estado de devolución de al menos un equipo'),
+    detalles: z.array(detalleDevolucionSchema).min(1, { error: 'Debes especificar el estado de devolución de al menos un equipo' }),
 });
 
 export const idParamSchema = z.object({

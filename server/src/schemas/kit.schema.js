@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const crearKitSchema = z.object({
-    nombre: z.string().min(1, 'El nombre del kit es requerido'),
+    nombre: z.string().min(1, { error: 'El nombre del kit es requerido' }),
 });
 
 export const asignarEquipoSchema = z.object({

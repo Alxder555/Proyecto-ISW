@@ -31,7 +31,7 @@ export const crearAsignacion = async (req, res, next) => {
 export const registrarDevolucion = async (req, res, next) => {
     try {
         const { detalles } = req.body;
-        const asignacion = await asignacionService.registrarDevolucion(req.params.id, detalles);
+        const asignacion = await asignacionService.registrarDevolucion({ asignacionId: req.params.id, detalles, });
         return res.status(200).json(asignacion);
     } catch (error) {
         if (codigosNoEncontrado.has(error.code)) {

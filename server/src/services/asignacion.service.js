@@ -59,7 +59,7 @@ export const registrarDevolucion = ({ asignacionId, detalles }) => {
     return prisma.$transaction(async (tx) => {
         const asignacion = await tx.asignacionKit.findUnique({
             where: { id: asignacionId },
-            include: { detalles: true }
+            include: { detalles: true },
         });
 
         if (!asignacion) {
