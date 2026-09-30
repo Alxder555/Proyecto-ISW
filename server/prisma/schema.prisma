@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum EstadoEquipo {
+  BUEN_ESTADO
+  DANADO
+  PERDIDO
+}
+
+model Operador {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  contacto  String
+  funcion   String
+  disponible Boolean  @default(true)
+  eventos   Evento[]
+}
+
+model Kit {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  estado    String   @default("LIBRE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  equipos      Equipo[]
+  asignaciones AsignacionKit[]
+  historial    HistorialEquipoKit[]
+  eventos      Evento[]
+}
+
+model Equipo {
+  id        Int          @id @default(autoincrement())
+  nombre    String
+  marca     String
+  modelo    String
+  cantidad  Int
+  precio    Decimal      @db.Decimal(10, 2)
+  estado    EstadoEquipo @default(BUEN_ESTADO)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  kitId Int?
+  kit   Kit? @relation(fields: [kitId], references: [id])
+
+  detalles  DetalleEquipoAsignacion[]
+  historial HistorialEquipoKit[]
+}
+
+model Evento {
+  id                Int       @id @default(autoincrement())
+  nombre            String
+  cliente           String?
+  ubicacion         String?
+  fechaInicio       DateTime
+  fechaFin          DateTime?
+  estado     String     @default("ACTIVO")
+  valorTransmision  Decimal?  @db.Decimal(10, 2)
+  aporteAuspiciador Decimal?  @db.Decimal(10, 2)
+  createdAt         DateTime  @default(now())
+
+  operadores Operador[]
+  kits       Kit[]
+  asignaciones AsignacionKit[]
+  gastos       Gasto[]
+}
+
+model Perdida {
+  id          Int      @id @default(autoincrement())
+  descripcion String
+  monto       Float
+  fecha       DateTime @default(now())
+}
+
+model AsignacionKit {
+  id              Int       @id @default(autoincrement())
+  eventoId        Int
+  evento          Evento    @relation(fields: [eventoId], references: [id])
+  kitId           Int
+  kit             Kit       @relation(fields: [kitId], references: [id])
+  fechaEntrega    DateTime  @default(now())
+  fechaDevolucion DateTime?
+
+  detalles DetalleEquipoAsignacion[]
+}
+
+
+
+model DetalleEquipoAsignacion {
+  id               Int           @id @default(autoincrement())
+  asignacionId     Int
+  asignacion       AsignacionKit @relation(fields: [asignacionId], references: [id])
+  equipoId         Int
+  equipo           Equipo        @relation(fields: [equipoId], references: [id])
+  estadoEntrega    EstadoEquipo
+  estadoDevolucion EstadoEquipo?
+  observaciones    String?
+}
+
+model HistorialEquipoKit {
+  id           Int       @id @default(autoincrement())
+  equipoId     Int
+  equipo       Equipo    @relation(fields: [equipoId], references: [id])
+  kitId        Int
+  kit          Kit       @relation(fields: [kitId], references: [id])
+  fechaIngreso DateTime  @default(now())
+  fechaSalida  DateTime?
+  motivo       String?
+}
+
+enum TipoGasto {
+  REMUNERACION
+  MOVILIZACION
+  PEAJE
+  OTRO
+}
+
+model Gasto {
+  id           Int       @id @default(autoincrement())
+  eventoId     Int
+  evento       Evento    @relation(fields: [eventoId], references: [id])
+  tipo         TipoGasto
+  monto        Decimal   @db.Decimal(10, 2)
+  fecha        DateTime  @default(now())
+  puntoSalida  String?
+  puntoLlegada String?
+  comprobante  String?
+  observacion  String?
+}
