@@ -9,7 +9,7 @@ const router = Router();
 
 router.use('/equipo', equipoRoutes);
 router.use('/kit', kitRoutes);
-router.use('/trabajo',trabajoRoutes);
-router.use('/asignacion',asignacionRoutes);
+router.use('/trabajo', trabajoRoutes);
+router.use('/asignacion', asignacionRoutes);
 
 export default router;
