@@ -12,15 +12,26 @@ enum EstadoEquipo {
   PERDIDO
 }
 
+model Operador {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  contacto  String
+  funcion   String
+  disponible Boolean  @default(true)
+  eventos   Evento[]
+}
+
 model Kit {
   id        Int      @id @default(autoincrement())
   nombre    String
+  estado    String   @default("LIBRE")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   equipos      Equipo[]
   asignaciones AsignacionKit[]
   historial    HistorialEquipoKit[]
+  eventos      Evento[]
 }
 
 model Equipo {
@@ -45,14 +56,25 @@ model Evento {
   id                Int       @id @default(autoincrement())
   nombre            String
   cliente           String?
+  ubicacion         String?
   fechaInicio       DateTime
   fechaFin          DateTime?
+  estado     String     @default("ACTIVO")
   valorTransmision  Decimal?  @db.Decimal(10, 2)
   aporteAuspiciador Decimal?  @db.Decimal(10, 2)
   createdAt         DateTime  @default(now())
 
+  operadores Operador[]
+  kits       Kit[]
   asignaciones AsignacionKit[]
   gastos       Gasto[]
+}
+
+model Perdida {
+  id          Int      @id @default(autoincrement())
+  descripcion String
+  monto       Float
+  fecha       DateTime @default(now())
 }
 
 model AsignacionKit {
@@ -66,6 +88,8 @@ model AsignacionKit {
 
   detalles DetalleEquipoAsignacion[]
 }
+
+
 
 model DetalleEquipoAsignacion {
   id               Int           @id @default(autoincrement())
