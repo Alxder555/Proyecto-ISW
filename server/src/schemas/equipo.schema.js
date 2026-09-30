@@ -1,0 +1,21 @@
+import { z } from 'zod';
+
+export const crearEquipoSchema = z.object({
+  nombre: z.string().min(1, { error: 'El nombre es requerido' }),
+  marca: z.string().min(1, { error: 'La marca es requerida' }),
+  modelo: z.string().min(1, { error: 'El modelo es requerido' }),
+  cantidad: z.number().int().positive('La cantidad debe ser mayor a 0'),
+  precio: z.number().positive('El precio debe ser mayor a 0'),
+  estado: z.enum(['BUEN_ESTADO', 'DANADO', 'PERDIDO']).optional(),
+  kitId: z.number().int().positive().optional(),
+});
+
+export const actualizarEquipoSchema = crearEquipoSchema
+  .partial()
+  .refine((data) => Object.keys(data).length > 0, {
+    message: 'Debes enviar al menos un campo para actualizar',
+  });
+
+export const idParamSchema = z.object({
+  id: z.coerce.number().int().positive('El id debe ser un numero valido'),
+});
