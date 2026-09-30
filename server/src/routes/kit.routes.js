@@ -1,0 +1,13 @@
+import { Router } from "express";
+import { crearKit, listarKits, obtenerKit, asignarEquipo } from "../services/kit.service";
+import { validate } from "zod";
+import { crearKitSchema, asignarEquipoSchema, idParamSchema } from "../schemas/kit.schema";
+
+const router = Router();
+
+router.post('/', validate(crearKitSchema), crearKit);
+router.get('/', listarKits);
+router.get('/:id', validate(idParamSchema, 'params'), obtenerKit);
+router.post('/:id/equipos', validate(idParamSchema, 'params'), validate(asignarEquipoSchema), asignarEquipo);
+
+export default router;
