@@ -86,3 +86,39 @@ model HistorialEquipoKit {
   fechaSalida  DateTime?
   motivo       String?   
 }
+
+model Evento {
+  id                 Int       @id @default(autoincrement())
+  nombre             String
+  cliente            String?
+  fechaInicio        DateTime
+  fechaFin           DateTime?
+  valorTransmision   Decimal?  @db.Decimal(10, 2)
+  aporteAuspiciador  Decimal?  @db.Decimal(10, 2)
+  createdAt          DateTime  @default(now())
+
+  asignaciones       AsignacionKit[]
+  gastos             Gasto[]
+}
+
+enum TipoGasto {
+  REMUNERACION
+  MOVILIZACION
+  PEAJE
+  OTRO
+}
+
+model Gasto {
+  id             Int       @id @default(autoincrement())
+  eventoId      Int
+  trabajo        Evento   @relation(fields: [eventoIdId], references: [id])
+
+  tipo           TipoGasto
+  monto          Decimal   @db.Decimal(10, 2)
+  fecha          DateTime  @default(now())
+
+  puntoSalida    String?
+  puntoLlegada   String?
+  comprobante    String?
+  observacion    String?
+}
