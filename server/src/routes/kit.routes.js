@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { crearKit, listarKits, obtenerKit, asignarEquipo } from "../services/kit.service";
+import { crearKit,listarKits,obtenerKit,asignarEquipo } from "../controllers/kit.controller";
 import { validate } from "zod";
 import { crearKitSchema, asignarEquipoSchema, idParamSchema } from "../schemas/kit.schema";
 
