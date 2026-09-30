@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { crearKit,listarKits,obtenerKit,asignarEquipo } from "../controllers/kit.controller";
+import { crearKit,listarKits,obtenerKit,asignarEquipo } from "../controllers/kit.controller.js";
 import { validate } from "zod";
-import { crearKitSchema, asignarEquipoSchema, idParamSchema } from "../schemas/kit.schema";
+import { crearKitSchema, asignarEquipoSchema, idParamSchema } from "../schemas/kit.schema.js";
 
 const router = Router();
 
