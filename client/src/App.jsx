@@ -1,7 +1,8 @@
+import EquiposPage from "./pages/EquipoPage";
 
 function App() {
 
-  return;
+  return <EquiposPage/>; 
     
 }
 
