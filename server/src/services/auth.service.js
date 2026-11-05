@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import prisma from '../lib/prisma.js';
+import prisma from '../config/prisma.js';
 
 // Hash de relleno: si el correo no existe, igual se hace una comparación,
 // así el tiempo de respuesta no delata qué correos están registrados.
@@ -17,7 +17,7 @@ export async function login({ email, password }) {
         where: { email: email.loLowerCase() },
     });
 
-    const coincide = await bcrypt.compare(password, usuario?.passwordHass ?? HASH_RELLENO);
+    const coincide = await bcrypt.compare(password, usuario?.password ?? HASH_RELLENO);
 
     if (!usuario || !coincide) {
         throw errorAuth('CREDENCIALES_INVALIDAS', 'Correo o contraseña incorrectos');

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import prisma from '../config/prisma';
+import prisma from '../config/prisma.js';
 
 const CAMPO_POR_PRIVILEGIO = {
     CONTADOR: 'rolContador',

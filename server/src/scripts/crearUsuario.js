@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import bcrypt from 'bcrypt';
-import prisma from '../src/lib/prisma.js';
+import prisma from '../config/prisma.js';
 
 const [email, password] = process.argv.slice(2);
 
@@ -12,7 +12,7 @@ if (!email || !password) {
 const usuario = await prisma.usuario.create({
   data: {
     email: email.toLowerCase(),
-    passwordHash: await bcrypt.hash(password, 10),
+    password: await bcrypt.hash(password, 10),
     rolSupervisor: true,
   },
 });
