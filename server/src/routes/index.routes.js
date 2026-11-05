@@ -5,8 +5,14 @@ import asignacionRoutes from './asignacion.routes.js'
 import gastoRoutes from './gasto.routes.js';
 import { obtenerRentabilidad } from '../controllers/evento.controller.js';
 import eventoRoutes from './evento.routes.js';
+import authRoutes from './auth.routes.js';
+import { autenticar } from "../middlewares/auth.middleware.js";
 
 const router = Router();
+
+router.use('/auth', authRoutes);
+
+router.use(autenticar);
 
 router.use('/equipo', equipoRoutes);
 router.use('/kit', kitRoutes);

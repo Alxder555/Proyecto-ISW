@@ -21,6 +21,19 @@ model Operador {
   eventos   Evento[]
 }
 
+model Usuario {
+  id Int @id @default(autoincrement())
+  email String @unique
+  password String
+  rolContador Boolean @default(false)
+  rolInventario Boolean @default(false)
+  rolSupervisor Boolean @default(false)
+  activo Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
 model Kit {
   id        Int      @id @default(autoincrement())
   nombre    String
