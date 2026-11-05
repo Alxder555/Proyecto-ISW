@@ -1,0 +1,36 @@
+### Login correcto (debería dar 200 con token)
+@baseUrl = http://localhost:3000/api
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@correo.com",
+  "password": "admin123"
+}
+
+### Contraseña incorrecta (debería dar 401)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@correo.com",
+  "password": "otra"
+}
+
+### Correo que no existe (debería dar 401, mismo mensaje que arriba)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "nadie@correo.com",
+  "password": "cualquiera"
+}
+
+### Formato de correo inválido (debería dar 400)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "no-es-un-correo",
+  "password": "x"
+}

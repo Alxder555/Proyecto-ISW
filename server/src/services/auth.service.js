@@ -14,7 +14,7 @@ function errorAuth(code, message) {
 
 export async function login({ email, password }) {
     const usuario = await prisma.usuario.findUnique({
-        where: { email: email.loLowerCase() },
+        where: { email: email.toLowerCase() },
     });
 
     const coincide = await bcrypt.compare(password, usuario?.password ?? HASH_RELLENO);
@@ -35,7 +35,7 @@ export async function login({ email, password }) {
         rolSupervisor: usuario.rolSupervisor,
     };
 
-    const token = jwt.sign(datosPublicos, process.env.JWT_SECREAT, {
+    const token = jwt.sign(datosPublicos, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN ?? '8h',
     })
 

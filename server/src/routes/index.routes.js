@@ -10,7 +10,7 @@ import { autenticar } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.use('/login', authRoutes);
+router.use('/auth', authRoutes);
 
 router.use(autenticar);
 
