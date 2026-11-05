@@ -10,11 +10,11 @@ function LoginPage() {
 
     const form = useForm({
         initialValues: {
-            username: '',
+            email: '',
             password: ''
         },
         validate: {
-            username: (v) => (v.trim().length > 0 ? null : 'El usuario es requerido'),
+            email: (v) => (/^\S+@\S+\.\S+$/.test(v) ? null : 'Correo electrónico inválido'),
             password: (v) => (v.trim().length > 0 ? null : 'La contraseña es requerida')
         }
     });
@@ -45,7 +45,7 @@ function LoginPage() {
                 <form onSubmit={form.onSubmit(handleSubmit)}>
                     <Stack>
                         {error && (<Alert color="red" variant="light">{error}</Alert>)}
-                        <TextInput label="Nombre de usuario" autoComplete="username" required {...form.getInputProps('username')} />
+                        <TextInput label="Correo electrónico" autoComplete="email" required {...form.getInputProps('email')} />
                         <PasswordInput label="Contraseña" autoComplete="current-password" required {...form.getInputProps('password')} />
                         <Button type="submit" fullWidth loading={cargando}>Ingresar</Button>
                     </Stack>
