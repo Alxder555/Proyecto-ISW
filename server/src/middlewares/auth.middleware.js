@@ -5,6 +5,7 @@ const CAMPO_POR_PRIVILEGIO = {
     CONTADOR: 'rolContador',
     INVENTARIO: 'rolInventario',
     SUPERVISOR: 'rolSupervisor',
+    ADMINISTRADOR: 'rolAdministrador',
 }
 
 export async function autenticar(req, res, next) {
@@ -28,6 +29,7 @@ export async function autenticar(req, res, next) {
             rolContador: true,
             rolInventario: true,
             rolSupervisor: true,
+            rolAdministrador: true,
         },
     });
 
@@ -56,7 +58,7 @@ export function requierePrivilegio(...permitidos) {
             return res.status(401).json({ error: 'Debes iniciar sesión' });
         }
 
-        const autorizado = permitidos.some((p) => usuario[CAMPO_POR_PRIVILEGIO[p]]);
+        const autorizado = permitidos.some((p) => usuario[CAMPO_POR_PRIVILEGIO[p]]) || usuario.rolAdministrador;
 
         if (!autorizado) {
             return res.status(403).json({ error: 'No tienes permisos para esta acción' });
