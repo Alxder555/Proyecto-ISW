@@ -1,31 +1,33 @@
 import { useState } from "react";
+import { Navigate, useLocation } from 'react-router-dom';
 import { Alert, Button, Center, Paper, PasswordInput, Stack, Text, TextInput, Title } from "@mantine/core";
 import { useForm } from '@mantine/form'
-import { useNavigate } from "react-router-dom";
+import { useAuth } from '../services/AuthContext.jsx'
 
 function LoginPage() {
     const [cargando, setCargando] = useState(false);
     const [error, setError] = useState(null);
-    const navigate = useNavigate();
+    
+    const location = useLocation();
+    const destino = location.state?.from?.pathname ?? '/equipos';
+    const {login,usuario,cargando: cargandoSesion} = useAuth();
 
     const form = useForm({
-        initialValues: {
-            email: '',
-            password: ''
-        },
+        initialValues: { email: '', password: ''},
         validate: {
             email: (v) => (/^\S+@\S+\.\S+$/.test(v) ? null : 'Correo electrónico inválido'),
             password: (v) => (v.trim().length > 0 ? null : 'La contraseña es requerida')
         }
     });
 
-    async function handleSubmit(values) {
+    if(cargandoSesion) return null;
+    if (usuario) return <Navigate to={destino} replace/>
+
+    async function handleSubmit({email,password}) {
         setError(null);
         setCargando(true);
         try {
-
-            console.log('Login', values);
-            navigate('/equipos', { replace: true });
+            await login(email,password)
 
         } catch (err) {
             setError(err.message);

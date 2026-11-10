@@ -96,3 +96,174 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "password": "NuevaClaveAna456" }
+
+###############################################
+# EQUIPOS
+###############################################
+
+### Crear equipo
+POST {{baseUrl}}/equipo
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Microscopio",
+  "marca": "Olympus",
+  "modelo": "CX23",
+  "cantidad": 1,
+  "precio": 450.00,
+  "estado": "BUEN_ESTADO"
+}
+
+### Crear otro equipo (para pruebas con kits)
+POST {{baseUrl}}/equipo
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Balanza",
+  "marca": "Ohaus",
+  "modelo": "PA214",
+  "cantidad": 2,
+  "precio": 320.00,
+  "estado": "BUEN_ESTADO"
+}
+
+### Listar todos los equipos
+GET {{baseUrl}}/equipo
+Authorization: Bearer {{token}}
+
+### Obtener un equipo por id
+GET {{baseUrl}}/equipo/1
+Authorization: Bearer {{token}}
+
+### Actualizar un equipo (parcial, ej: cambiar estado)
+PATCH {{baseUrl}}/equipo/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "estado": "BUEN_ESTADO"
+}
+
+### Actualizar un equipo (varios campos)
+PATCH {{baseUrl}}/equipo/1
+Content-Type: application/json
+
+{
+  "precio": 480.00,
+  "cantidad": 2
+}
+
+
+###############################################
+# KITS
+###############################################
+
+### Crear un kit
+POST {{baseUrl}}/kit
+Content-Type: application/json
+
+{
+  "nombre": "Kit de Laboratorio A"
+}
+
+### Listar todos los kits (con sus equipos)
+GET {{baseUrl}}/kit
+
+### Obtener un kit por id
+GET {{baseUrl}}/kit/1
+
+### Asignar un equipo existente a un kit
+POST {{baseUrl}}/kit/1/equipos
+Content-Type: application/json
+
+{
+  "equipoId": 1,
+  "motivo": "Ingreso inicial"
+}
+
+### Intentar asignar un equipo dañado/perdido (debería fallar con 409)
+POST {{baseUrl}}/kit/1/equipos
+Content-Type: application/json
+
+{
+  "equipoId": 1
+}
+
+
+###############################################
+# TRABAJOS
+###############################################
+
+### Crear un trabajo
+POST {{baseUrl}}/trabajo
+Content-Type: application/json
+
+{
+  "nombre": "Instalación Cliente XYZ",
+  "cliente": "Empresa XYZ",
+  "fechaInicio": "2026-10-05"
+}
+
+### Crear un trabajo con fecha de fin
+POST {{baseUrl}}/trabajo
+Content-Type: application/json
+
+{
+  "nombre": "Mantenimiento Cliente ABC",
+  "cliente": "Empresa ABC",
+  "fechaInicio": "2026-10-10",
+  "fechaFin": "2026-10-15"
+}
+
+
+###############################################
+# ASIGNACIONES (entrega de kit a un trabajo)
+###############################################
+
+### Crear una asignación (entrega del kit al trabajo)
+POST {{baseUrl}}/asignacion
+Content-Type: application/json
+
+{
+  "trabajoId": 1,
+  "kitId": 1,
+  "detalles": [
+    { "equipoId": 1, "estadoEntrega": "BUEN_ESTADO" },
+    { "equipoId": 2, "estadoEntrega": "BUEN_ESTADO", "observaciones": "Cable un poco desgastado" }
+  ]
+}
+
+### Intentar asignar un kit ya entregado (debería fallar con 409)
+POST {{baseUrl}}/asignacion
+Content-Type: application/json
+
+{
+  "trabajoId": 2,
+  "kitId": 1,
+  "detalles": [
+    { "equipoId": 1, "estadoEntrega": "BUEN_ESTADO" }
+  ]
+}
+
+### Registrar devolución de una asignación
+PATCH {{baseUrl}}/asignacion/1/devolucion
+Content-Type: application/json
+
+{
+  "detalles": [
+    { "equipoId": 1, "estadoDevolucion": "BUEN_ESTADO" },
+    { "equipoId": 2, "estadoDevolucion": "DANADO", "observaciones": "Se rompió el cable durante el uso" }
+  ]
+}
+
+### Intentar devolver una asignación ya devuelta (debería fallar con 409)
+PATCH {{baseUrl}}/asignacion/1/devolucion
+Content-Type: application/json
+
+{
+  "detalles": [
+    { "equipoId": 1, "estadoDevolucion": "BUEN_ESTADO" }
+  ]
+}
