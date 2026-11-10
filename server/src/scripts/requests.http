@@ -71,11 +71,24 @@ Content-Type: application/json
 { "email": "luis@correo.com", "password": "123" }
 
 ### Cambiar la contraseña de Ana (204)
-PATCH {{baseUrl}}/usuarios/2/password
+PATCH {{baseUrl}}/usuarios/3/password
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "password": "NuevaClaveAna456" }
+
+### Con la contraseña nueva (debe dar 200 con token)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{ "email": "ana@correo.com", "password": "NuevaClaveAna456" }
+
+### Con la contraseña anterior (debe dar 401)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{ "email": "ana@correo.com", "password": "ClaveDeAna123" }
+
 
 ### Id inexistente (404)
 PATCH {{baseUrl}}/usuarios/999/password

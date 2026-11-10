@@ -14,12 +14,12 @@ const CAMPOS_PUBLICOS = {
     createdAt: true,
 };
 
-export async function crearUsuario({ password, ...datos }) {
-    const passwordHash = await bcrypt.hash(password, COSTO_BCRYPT);
+export async function crearUsuario({ password: passwordPlano, ...datos }) {
+    const password = await bcrypt.hash(passwordPlano, COSTO_BCRYPT);
 
     try {
         return await prisma.usuario.create({
-            data: { ...datos, passwordHash },
+            data: { ...datos, password },
             select: CAMPOS_PUBLICOS,
         });
     } catch (error) {
@@ -32,7 +32,17 @@ export async function crearUsuario({ password, ...datos }) {
     }
 }
 
-export async function cambiarPassword({ id, password }) {
-    const passwordHash = await bcrypt.hash(password, COSTO_BCRYPT);
-    await prisma.usuario.update({ where: { id }, data: { passwordHash } });
+export async function cambiarPassword({ id, password: passwordPlano }) {
+    const hash = await bcrypt.hash(passwordPlano, COSTO_BCRYPT);
+
+    try {
+        await prisma.usuario.update({ where: { id }, data: { password: hash } });
+    } catch (error) {
+        if (error.code === 'P2025') {
+            const noExiste = new Error('El usuario no existe');
+            noExiste.code = 'USUARIO_NOT_FOUND';
+            throw noExiste;
+        }
+        throw error;
+    }
 }

@@ -20,6 +20,9 @@ export async function cambiarPassword(req, res, next) {
         });
         return res.status(204).send();
     } catch (error) {
+        if (error.code === 'USUARIO_NOT_FOUND') {
+            return res.status(404).json({ error: error.message });
+        }
         next(error);
     }
 }
