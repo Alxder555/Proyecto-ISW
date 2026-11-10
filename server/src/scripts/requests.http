@@ -34,3 +34,52 @@ Content-Type: application/json
   "email": "no-es-un-correo",
   "password": "x"
 }
+
+### Login como administrador
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{ "email": "admin@correo.com", "password": "admin123" }
+
+###
+@token = {{login.response.body.token}}
+
+### Crear usuario (201, sin passwordHash en la respuesta)
+POST {{baseUrl}}/usuarios
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "Ana@Correo.com",
+  "password": "ClaveDeAna123",
+  "rolInventario": true
+}
+
+### Mismo correo otra vez (409)
+POST {{baseUrl}}/usuarios
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "email": "ana@correo.com", "password": "ClaveDeAna123" }
+
+### Contraseña corta (400)
+POST {{baseUrl}}/usuarios
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "email": "luis@correo.com", "password": "123" }
+
+### Cambiar la contraseña de Ana (204)
+PATCH {{baseUrl}}/usuarios/2/password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "password": "NuevaClaveAna456" }
+
+### Id inexistente (404)
+PATCH {{baseUrl}}/usuarios/999/password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "password": "NuevaClaveAna456" }

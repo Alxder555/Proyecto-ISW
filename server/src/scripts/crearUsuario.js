@@ -13,7 +13,7 @@ const usuario = await prisma.usuario.create({
   data: {
     email: email.toLowerCase(),
     password: await bcrypt.hash(password, 10),
-    rolSupervisor: true,
+    rolAdministrador: true,
   },
 });
 
