@@ -18,7 +18,7 @@ router.use('/auth', authRoutes);
 router.use(autenticar);
 
 router.use('/usuarios',usuarioRoutes)
-router.use('/equipo', equipoRoutes);
+router.use('/equipos', equipoRoutes);
 router.use('/kit', kitRoutes);
 router.use('/asignacion', asignacionRoutes);
 

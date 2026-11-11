@@ -1,40 +1,6 @@
-### Login correcto (debería dar 200 con token)
 @baseUrl = http://localhost:3000/api
-POST {{baseUrl}}/auth/login
-Content-Type: application/json
-
-{
-  "email": "admin@correo.com",
-  "password": "admin123"
-}
-
-### Contraseña incorrecta (debería dar 401)
-POST {{baseUrl}}/auth/login
-Content-Type: application/json
-
-{
-  "email": "admin@correo.com",
-  "password": "otra"
-}
-
-### Correo que no existe (debería dar 401, mismo mensaje que arriba)
-POST {{baseUrl}}/auth/login
-Content-Type: application/json
-
-{
-  "email": "nadie@correo.com",
-  "password": "cualquiera"
-}
-
-### Formato de correo inválido (debería dar 400)
-POST {{baseUrl}}/auth/login
-Content-Type: application/json
-
-{
-  "email": "no-es-un-correo",
-  "password": "x"
-}
-
+### Personal: http://146.83.198.35:1258/api
+### Local http://localhost:3000/api
 ### Login como administrador
 # @name login
 POST {{baseUrl}}/auth/login
@@ -101,8 +67,8 @@ Content-Type: application/json
 # EQUIPOS
 ###############################################
 
-### Crear equipo
-POST {{baseUrl}}/equipo
+### Crear equipos
+POST {{baseUrl}}/equipos
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
@@ -115,8 +81,8 @@ Content-Type: application/json
   "estado": "BUEN_ESTADO"
 }
 
-### Crear otro equipo (para pruebas con kits)
-POST {{baseUrl}}/equipo
+### Crear otro equipos (para pruebas con kits)
+POST {{baseUrl}}/equipos
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
@@ -130,15 +96,15 @@ Content-Type: application/json
 }
 
 ### Listar todos los equipos
-GET {{baseUrl}}/equipo
+GET {{baseUrl}}/equipos
 Authorization: Bearer {{token}}
 
-### Obtener un equipo por id
-GET {{baseUrl}}/equipo/1
+### Obtener un equipos por id
+GET {{baseUrl}}/equipos/1
 Authorization: Bearer {{token}}
 
-### Actualizar un equipo (parcial, ej: cambiar estado)
-PATCH {{baseUrl}}/equipo/1
+### Actualizar un equipos (parcial, ej: cambiar estado)
+PATCH {{baseUrl}}/equipos/1
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -146,8 +112,8 @@ Authorization: Bearer {{token}}
   "estado": "BUEN_ESTADO"
 }
 
-### Actualizar un equipo (varios campos)
-PATCH {{baseUrl}}/equipo/1
+### Actualizar un equipos (varios campos)
+PATCH {{baseUrl}}/equipos/1
 Content-Type: application/json
 
 {
@@ -162,6 +128,7 @@ Content-Type: application/json
 
 ### Crear un kit
 POST {{baseUrl}}/kit
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -170,25 +137,28 @@ Content-Type: application/json
 
 ### Listar todos los kits (con sus equipos)
 GET {{baseUrl}}/kit
+Authorization: Bearer {{token}}
+Content-Type: application/json
 
 ### Obtener un kit por id
 GET {{baseUrl}}/kit/1
 
-### Asignar un equipo existente a un kit
+### Asignar un equipos existente a un kit
 POST {{baseUrl}}/kit/1/equipos
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "equipoId": 1,
+  "equiposId": 1,
   "motivo": "Ingreso inicial"
 }
 
-### Intentar asignar un equipo dañado/perdido (debería fallar con 409)
+### Intentar asignar un equipos dañado/perdido (debería fallar con 409)
 POST {{baseUrl}}/kit/1/equipos
 Content-Type: application/json
 
 {
-  "equipoId": 1
+  "equiposId": 1
 }
 
 
@@ -224,37 +194,39 @@ Content-Type: application/json
 
 ### Crear una asignación (entrega del kit al trabajo)
 POST {{baseUrl}}/asignacion
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "trabajoId": 1,
-  "kitId": 1,
-  "detalles": [
-    { "equipoId": 1, "estadoEntrega": "BUEN_ESTADO" },
-    { "equipoId": 2, "estadoEntrega": "BUEN_ESTADO", "observaciones": "Cable un poco desgastado" }
-  ]
-}
-
-### Intentar asignar un kit ya entregado (debería fallar con 409)
-POST {{baseUrl}}/asignacion
-Content-Type: application/json
-
-{
-  "trabajoId": 2,
+  "eventoId": 1,
   "kitId": 1,
   "detalles": [
     { "equipoId": 1, "estadoEntrega": "BUEN_ESTADO" }
   ]
 }
 
+### Intentar asignar un kit ya entregado (debería fallar con 409)
+POST {{baseUrl}}/asignacion
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "trabajoId": 2,
+  "kitId": 1,
+  "detalles": [
+    { "equiposId": 1, "estadoEntrega": "BUEN_ESTADO" }
+  ]
+}
+
 ### Registrar devolución de una asignación
 PATCH {{baseUrl}}/asignacion/1/devolucion
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
   "detalles": [
-    { "equipoId": 1, "estadoDevolucion": "BUEN_ESTADO" },
-    { "equipoId": 2, "estadoDevolucion": "DANADO", "observaciones": "Se rompió el cable durante el uso" }
+    { "equiposId": 1, "estadoDevolucion": "BUEN_ESTADO" },
+    { "equiposId": 2, "estadoDevolucion": "DANADO", "observaciones": "Se rompió el cable durante el uso" }
   ]
 }
 
@@ -264,6 +236,17 @@ Content-Type: application/json
 
 {
   "detalles": [
-    { "equipoId": 1, "estadoDevolucion": "BUEN_ESTADO" }
+    { "equiposId": 1, "estadoDevolucion": "BUEN_ESTADO" }
   ]
+}
+
+### Crear evento
+POST {{baseUrl}}/eventos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre":"Evento1",
+  "ubicacion": "Ubicación1",
+  "fechaInicio": "2026-10-10"
 }

@@ -1,4 +1,7 @@
 import { apiFetch } from "./apiFetch";
 
-export const obtenerEquipos = () => apiFetch('/equipo');
-export const crearEquipo = (data) => apiFetch('/equipo', { method: 'POST', body: data });
+export const obtenerEquipos = () => apiFetch('/equipos');
+export const crearEquipo = (data) => apiFetch('/equipos', { method: 'POST', body: data });
+export function actualizarEquipo(id, data) {
+  return apiFetch(`/equipos/${id}`, { method: 'PATCH', body: data });
+}
