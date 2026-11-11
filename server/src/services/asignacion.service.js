@@ -1,11 +1,11 @@
 import prisma from "../config/prisma.js";
 
-export const crearAsignacion = ({ trabajoId, kitId, detalles }) => {
+export const crearAsignacion = ({ eventoId, kitId, detalles }) => {
     return prisma.$transaction(async (tx) => {
-        const trabajo = await tx.trabajo.findUnique({ where: { id: trabajoId } });
-        if (!trabajo) {
-            const error = new Error('El trabajo especificado no existe');
-            error.code = 'TRABAJO_NOT_FOUND';
+        const evento = await tx.evento.findUnique({ where: { id: eventoId } });
+        if (!evento) {
+            const error = new Error('El evento especificado no existe');
+            error.code = 'EVENTO_NOT_FOUND';
             throw error;
         }
         const kit = await tx.kit.findUnique({
@@ -23,7 +23,7 @@ export const crearAsignacion = ({ trabajoId, kitId, detalles }) => {
             where: { kitId, fechaDevolucion: null }
         });
         if (asignacionActiva) {
-            const error = new Error('El kit ya se encuentra entregado en otro trabajo activo');
+            const error = new Error('El kit ya se encuentra entregado en otro evento activo');
             error.code = 'KIT_NO_DISPONIBLE';
             throw error;
         }
@@ -37,7 +37,7 @@ export const crearAsignacion = ({ trabajoId, kitId, detalles }) => {
         }
         const asignacion = await tx.asignacionKit.create({
             data: {
-                trabajoId, kitId, detalles: {
+                eventoId, kitId, detalles: {
                     create: detalles.map((d) => ({
                         equipoId: d.equipoId,
                         estadoEntrega: d.estadoEntrega,
@@ -47,7 +47,7 @@ export const crearAsignacion = ({ trabajoId, kitId, detalles }) => {
             },
             include: {
                 detalles: { include: { equipo: true } },
-                trabajo: true,
+                evento: true,
                 kit: true,
             },
         });
@@ -108,10 +108,23 @@ export const registrarDevolucion = ({ asignacionId, detalles }) => {
             data: { fechaDevolucion: new Date() },
             include: {
                 detalles: { include: { equipo: true } },
-                trabajo: true,
+                evento: true,
                 kit: true,
             },
         });
         return asignacionActualizada;
+    });
+}
+
+export const listarAsignaciones = () => {
+    return prisma.asignacionKit.findMany({
+        orderBy: { fechaEntrega: 'desc' },
+        include: {
+            evento: { select: { id: true, nombre: true } },
+            kit: { select: { id: true, nombre: true } },
+            detalles: {
+                include: { equipo: { select: { id: true, nombre: true, marca: true, modelo: true } } }
+            },
+        },
     });
 }

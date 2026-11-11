@@ -9,6 +9,7 @@ import EquiposPage from './pages/EquiposPage';
 import PaginaPendiente from './pages/PaginaPendiente';
 import UsuariosPage from './pages/UsuariosPage';
 import KitsPage from './pages/KitsPage';
+import AsignacionesPage from './pages/AsignacionesPage';
 
 
 function App() {
@@ -25,11 +26,11 @@ function App() {
               <Route element={<RutaPrivilegiada />}>
                 <Route path="equipos" element={<EquiposPage />} />
                 <Route path="kits" element={<KitsPage />} />
-                <Route path="asignaciones" element={<PaginaPendiente titulo="Asignaciones" />} />
+                <Route path="asignaciones" element={<AsignacionesPage />} />
                 <Route path="eventos" element={<PaginaPendiente titulo="Eventos" />} />
                 <Route path="gastos" element={<PaginaPendiente titulo="Gastos" />} />
                 <Route path="perdidas" element={<PaginaPendiente titulo="Pérdidas" />} />
-                <Route path="usuarios" element={<UsuariosPage/>} />
+                <Route path="usuarios" element={<UsuariosPage />} />
               </Route>
             </Route>
           </Route>

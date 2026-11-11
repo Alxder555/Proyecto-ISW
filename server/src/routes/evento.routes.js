@@ -9,10 +9,11 @@ import {
 } from '../controllers/evento.controller.js';
 import { validate } from '../middlewares/validate.middleware.js';
 import { crearEventoSchema } from '../schemas/evento.schema.js';
+import { requierePrivilegio } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
-router.get('/', obtenerEventos);
+router.get('/', requierePrivilegio('INVENTARIO', 'SUPERVISOR'), obtenerEventos);
 router.get('/:id', obtenerEventoPorId);
 router.post('/', validate(crearEventoSchema),crearEvento);
 router.put('/:id', actualizarEvento);

@@ -9,7 +9,7 @@ const codigosConflicto = new Set([
 ]);
 
 const codigosNoEncontrado = new Set([
-    'TRABAJO_NOT_FOUND',
+    'EVENTO_NOT_FOUND',
     'KIT_NOT_FOUND',
     'ASIGNACION_NOT_FOUND',
 ]);
@@ -42,4 +42,14 @@ export const registrarDevolucion = async (req, res, next) => {
         }
         next(error);
     }
+}
+
+export const listarAsignaciones = async (req, res, next) => {
+    try {
+        const asignaciones = await asignacionService.listarAsignaciones();
+        return res.status(200).json(asignaciones);
+    } catch (error) {
+        next(error);
+    }
+
 }

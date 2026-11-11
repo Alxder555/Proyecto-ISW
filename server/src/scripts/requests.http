@@ -1,5 +1,6 @@
 @baseUrl = http://localhost:3000/api
-
+### Personal: http://146.83.198.35:1258/api
+### Local http://localhost:3000/api
 ### Login como administrador
 # @name login
 POST {{baseUrl}}/auth/login
@@ -193,19 +194,20 @@ Content-Type: application/json
 
 ### Crear una asignación (entrega del kit al trabajo)
 POST {{baseUrl}}/asignacion
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "trabajoId": 1,
+  "eventoId": 1,
   "kitId": 1,
   "detalles": [
-    { "equiposId": 1, "estadoEntrega": "BUEN_ESTADO" },
-    { "equiposId": 2, "estadoEntrega": "BUEN_ESTADO", "observaciones": "Cable un poco desgastado" }
+    { "equipoId": 1, "estadoEntrega": "BUEN_ESTADO" }
   ]
 }
 
 ### Intentar asignar un kit ya entregado (debería fallar con 409)
 POST {{baseUrl}}/asignacion
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -218,6 +220,7 @@ Content-Type: application/json
 
 ### Registrar devolución de una asignación
 PATCH {{baseUrl}}/asignacion/1/devolucion
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -235,4 +238,15 @@ Content-Type: application/json
   "detalles": [
     { "equiposId": 1, "estadoDevolucion": "BUEN_ESTADO" }
   ]
+}
+
+### Crear evento
+POST {{baseUrl}}/eventos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre":"Evento1",
+  "ubicacion": "Ubicación1",
+  "fechaInicio": "2026-10-10"
 }
