@@ -33,6 +33,7 @@ export async function login({ email, password }) {
         rolContador: usuario.rolContador,
         rolInventario: usuario.rolInventario,
         rolSupervisor: usuario.rolSupervisor,
+        rolAdministrador: usuario.rolAdministrador,
     };
 
     const token = jwt.sign(datosPublicos, process.env.JWT_SECRET, {
