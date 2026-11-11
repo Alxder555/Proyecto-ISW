@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { obtenerEquipos, crearEquipo } from "../services/equipoServices";
+import { actualizarEquipo } from "../services/equipoServices";
 
 export function useEquipos() {
     const [equipos, setEquipos] = useState([]);
@@ -19,13 +20,21 @@ export function useEquipos() {
     }, []);
 
     async function agregarEquipo(data) {
-        await crearEquipo(data);
+        const equipo = await crearEquipo(data);
         await cargarEquipos();
+        return equipo;
     }
+
+    async function editarEquipo(id, data) {
+        const equipo = await actualizarEquipo(id, data);
+        await cargarEquipos();
+        return equipo;
+    }
+
     useEffect(() => {
         cargarEquipos();
     }, [cargarEquipos]);
 
-    return { equipos, cargando, error, agregarEquipo };
+    return { equipos, cargando, error, agregarEquipo, editarEquipo, recargar: cargarEquipos };
 
 }

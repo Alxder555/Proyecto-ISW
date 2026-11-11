@@ -1,6 +1,6 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { Center, Loader } from '@mantine/core';
-import { useAuth } from '../services/AuthContext.jsx';
+import { useAuth } from '../services/AuthContext';
 
 function RutaProtegida() {
   const { usuario, cargando } = useAuth();
