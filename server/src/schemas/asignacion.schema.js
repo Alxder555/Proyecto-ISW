@@ -9,7 +9,7 @@ const detalleEquipoSchema = z.object({
 });
 
 export const crearAsignacionSchema = z.object({
-    trabajoId: z.number().int().positive('El id del trabajo es requerido'),
+    eventoId: z.number().int().positive('El id del evento es requerido'),
     kitId: z.number().int().positive('El id del kit es requerido'),
     detalles: z.array(detalleEquipoSchema).min(1, { error: 'Debes especificar el estado de al menos un equipo' }),
 });

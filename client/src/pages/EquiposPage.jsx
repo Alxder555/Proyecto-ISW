@@ -1,233 +1,142 @@
-<<<<<<< Updated upstream
+import { useMemo, useState } from 'react';
+import { Alert, Button, Group, Select, Stack, Text, TextInput, Title } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { IconPlus, IconRefresh, IconSearch } from '@tabler/icons-react';
+import { useAuth } from '../services/AuthContext';
 import { useEquipos } from '../hooks/useEquipos';
-import EquipoForm from '../components/EquipoForm';
-import EquipoList from '../components/EquipoList';
-import LogoutButton from '../components/LogoutButton'
-=======
-import React, { useState, useEffect } from 'react';
-import {
-  Container,
-  Title,
-  Button,
-  Group,
-  Modal,
-  TextInput,
-  NumberInput,
-  Select,
-  Paper,
-  Stack,
-  Table,
-  Badge,
-  Text,
-  LoadingOverlay,
-  ActionIcon
-} from '@mantine/core';
-import { useForm } from '@mantine/form';
-import Navbar from '../components/Navbar';
-import { getEquipos, createEquipo, deleteEquipo } from "../services/equiposServices";
->>>>>>> Stashed changes
+import { tienePrivilegio } from '../config/menu';
+import { ESTADOS } from '../config/estados';
+import EquipoTable from '../components/EquipoTable';
+import EquipoFormModal from '../components/EquipoFormModal';
 
-export default function EquiposPage() {
-  const [equipos, setEquipos] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
+const OPCIONES_ESTADO = Object.entries(ESTADOS).map(([value, { label }]) => ({ value, label }));
 
-  const form = useForm({
-    initialValues: {
-      nombre: '',
-      marca: '',
-      modelo: '',
-      cantidad: 1,
-      precio: 0,
-      estado: 'BUEN_ESTADO'
-    },
-    validate: {
-      nombre: (val) => (val ? null : 'El nombre es obligatorio'),
-      marca: (val) => (val ? null : 'La marca es obligatoria'),
-      modelo: (val) => (val ? null : 'El modelo es obligatorio'),
-      precio: (val) => (val >= 0 ? null : 'El precio debe ser válido')
+function EquiposPage() {
+  const { equipos, cargando, error, agregarEquipo, editarEquipo, recargar } = useEquipos();
+  const { usuario } = useAuth();
+  const puedeCrear = tienePrivilegio(usuario, ['rolInventario']);
+  const puedeEditar = tienePrivilegio(usuario, ['rolInventario']);
+
+  const [modalAbierto, { open, close }] = useDisclosure(false);
+  const [equipoEditando, setEquipoEditando] = useState(null);
+
+  const [exito, setExito] = useState(null);
+  const [busqueda, setBusqueda] = useState('');
+  const [estado, setEstado] = useState(null);
+
+  function abrirNuevo() {
+    setEquipoEditando(null);
+    open();
+  }
+
+  function abrirEdicion(equipo) {
+    setEquipoEditando(equipo);
+    open();
+  }
+
+  async function guardar(datos) {
+    if (equipoEditando) {
+      const equipo = await editarEquipo(equipoEditando.id, datos);
+      setExito(`Equipo "${equipo.nombre}" actualizado correctamente`);
+    } else {
+      const equipo = await agregarEquipo(datos);
+      setExito(`Equipo "${equipo.nombre}" creado correctamente`);
     }
-  });
+  }
 
-  const cargarDatos = async () => {
-    setLoading(true);
-    try {
-      const data = await getEquipos();
-      setEquipos(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error('Error al cargar equipos:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const filtrados = useMemo(() => {
+    const texto = busqueda.trim().toLowerCase();
 
-  useEffect(() => {
-    cargarDatos();
-  }, []);
+    return equipos.filter((e) => {
+      const coincideEstado = !estado || e.estado === estado;
+      const coincideTexto =
+        !texto ||
+        [e.nombre, e.marca, e.modelo, e.kit?.nombre].some((v) => v?.toLowerCase().includes(texto));
 
-  const handleSubmit = async (values) => {
-    try {
-      await createEquipo({
-        ...values,
-        cantidad: Number(values.cantidad),
-        precio: Number(values.precio)
-      });
-      setModalOpen(false);
-      form.reset();
-      cargarDatos();
-    } catch (err) {
-      console.error('Error al crear equipo:', err);
-    }
-  };
+      return coincideEstado && coincideTexto;
+    });
+  }, [equipos, busqueda, estado]);
 
-  const handleEliminar = async (id) => {
-    if (window.confirm('¿Deseas eliminar este equipo?')) {
-      try {
-        await deleteEquipo(id);
-        cargarDatos();
-      } catch (err) {
-        console.error('Error al eliminar equipo:', err);
-      }
-    }
-  };
-
-  const getBadgeColor = (estado) => {
-    switch (estado) {
-      case 'BUEN_ESTADO': return 'green';
-      case 'DANADO': return 'orange';
-      case 'PERDIDO': return 'red';
-      default: return 'gray';
-    }
-  };
+  const hayFiltros = busqueda.trim() !== '' || estado !== null;
 
   return (
-    <Container size="lg" py="xl">
-      <Navbar />
-
-      <Group justify="space-between" mb="lg">
+    <Stack>
+      <Group justify="space-between" align="flex-end">
         <div>
-          <Title order={2}>Inventario de Equipos</Title>
-          <Text color="dimmed" size="sm">
-            Gestión física y de estado técnico de los equipos
-          </Text>
+          <Title order={2}>Equipos</Title>
+          {!cargando && !error && (
+            <Text size="sm" c="dimmed">
+              {filtrados.length} de {equipos.length} equipos
+            </Text>
+          )}
         </div>
-        <Button onClick={() => setModalOpen(true)}>+ Agregar Equipo</Button>
+        <Group>
+          <Button
+            variant="default"
+            leftSection={<IconRefresh size={16} />}
+            onClick={recargar}
+            loading={cargando}
+          >
+            Actualizar
+          </Button>
+          {puedeCrear && (
+            <Button leftSection={<IconPlus size={16} />} onClick={abrirNuevo}>
+              Nuevo equipo
+            </Button>
+
+          )}
+        </Group>
       </Group>
 
-      <Paper shadow="xs" p="md" withBorder style={{ position: 'relative' }}>
-        <LoadingOverlay visible={loading} overlayBlur={2} />
-        <Table highlightOnHover>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Marca</th>
-              <th>Modelo</th>
-              <th>Cantidad</th>
-              <th>Precio Unit.</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {equipos.length === 0 && !loading ? (
-              <tr>
-                <td colSpan={8} style={{ textAlign: 'center', color: 'gray' }}>
-                  No hay equipos registrados aún.
-                </td>
-              </tr>
-            ) : (
-              equipos.map((eq) => (
-                <tr key={eq.id}>
-                  <td>#{eq.id}</td>
-                  <td><strong>{eq.nombre}</strong></td>
-                  <td>{eq.marca}</td>
-                  <td>{eq.modelo}</td>
-                  <td>{eq.cantidad}</td>
-                  <td>${Number(eq.precio).toLocaleString()}</td>
-                  <td>
-                    <Badge color={getBadgeColor(eq.estado)}>
-                      {eq.estado}
-                    </Badge>
-                  </td>
-                  <td>
-                    <ActionIcon color="red" onClick={() => handleEliminar(eq.id)}>
-                      🗑️
-                    </ActionIcon>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </Table>
-      </Paper>
+      {exito && (
+        <Alert color="green" variant="light" withCloseButton onClose={() => setExito(null)}>
+          {exito}
+        </Alert>
+      )}
 
-<<<<<<< Updated upstream
-      <EquipoList equipos={equipos} cargando={cargando} />
-      <LogoutButton></LogoutButton>
-    </div>
-=======
-      <Modal
-        opened={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title="Registrar Nuevo Equipo"
-        centered
-      >
-        <form onSubmit={form.onSubmit(handleSubmit)}>
-          <Stack spacing="sm">
-            <TextInput
-              label="Nombre del Equipo"
-              placeholder="Ej. Cámara Sony FX3"
-              required
-              {...form.getInputProps('nombre')}
-            />
-            <Group grow>
-              <TextInput
-                label="Marca"
-                placeholder="Ej. Sony"
-                required
-                {...form.getInputProps('marca')}
-              />
-              <TextInput
-                label="Modelo"
-                placeholder="Ej. FX3"
-                required
-                {...form.getInputProps('modelo')}
-              />
-            </Group>
-            <Group grow>
-              <NumberInput
-                label="Cantidad"
-                min={1}
-                required
-                {...form.getInputProps('cantidad')}
-              />
-              <NumberInput
-                label="Precio ($)"
-                min={0}
-                required
-                {...form.getInputProps('precio')}
-              />
-            </Group>
-            <Select
-              label="Estado Inicial"
-              data={[
-                { value: 'BUEN_ESTADO', label: 'Buen Estado' },
-                { value: 'DANADO', label: 'Dañado' },
-                { value: 'PERDIDO', label: 'Perdido' }
-              ]}
-              {...form.getInputProps('estado')}
-            />
-            <Group justify="flex-end" mt="md">
-              <Button variant="default" onClick={() => setModalOpen(false)}>
-                Cancelar
-              </Button>
-              <Button type="submit">Guardar Equipo</Button>
-            </Group>
-          </Stack>
-        </form>
-      </Modal>
-    </Container>
->>>>>>> Stashed changes
+      <Group>
+        <TextInput
+          placeholder="Buscar por nombre, marca, modelo o kit"
+          leftSection={<IconSearch size={16} />}
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.currentTarget.value)}
+          w={{ base: '100%', sm: 360 }}
+        />
+        <Select
+          placeholder="Todos los estados"
+          data={OPCIONES_ESTADO}
+          value={estado}
+          onChange={setEstado}
+          clearable
+          w={{ base: '100%', sm: 200 }}
+        />
+      </Group>
+
+      {error ? (
+        <Alert color="red" title="No se pudo cargar el inventario">
+          <Group justify="space-between">
+            <Text size="sm">{error}</Text>
+            <Button size="xs" variant="light" color="red" onClick={recargar}>
+              Reintentar
+            </Button>
+          </Group>
+        </Alert>
+      ) : (
+        <EquipoTable
+          equipos={filtrados}
+          cargando={cargando}
+          mensajeVacio={
+            hayFiltros ? 'Ningún equipo coincide con la búsqueda' : 'Aún no hay equipos registrados'
+          }
+          onEditar={puedeEditar ? abrirEdicion : undefined}
+        />
+      )}
+      <EquipoFormModal
+        opened={modalAbierto}
+        onClose={close}
+        onSubmit={guardar}
+        equipo={equipoEditando}
+      />
+    </Stack>
   );
 }

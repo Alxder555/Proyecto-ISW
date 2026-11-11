@@ -8,27 +8,27 @@ import { useAuth } from '../services/AuthContext.jsx'
 function LoginPage() {
     const [cargando, setCargando] = useState(false);
     const [error, setError] = useState(null);
-    
+
     const location = useLocation();
     const destino = location.state?.from?.pathname ?? '/equipos';
-    const {login,usuario,cargando: cargandoSesion} = useAuth();
+    const { login, usuario, cargando: cargandoSesion } = useAuth();
 
     const form = useForm({
-        initialValues: { email: '', password: ''},
+        initialValues: { email: '', password: '' },
         validate: {
             email: (v) => (/^\S+@\S+\.\S+$/.test(v) ? null : 'Correo electrónico inválido'),
             password: (v) => (v.trim().length > 0 ? null : 'La contraseña es requerida')
         }
     });
 
-    if(cargandoSesion) return null;
-    if (usuario) return <Navigate to={destino} replace/>
+    if (cargandoSesion) return null;
+    if (usuario) return <Navigate to={destino} replace />
 
-    async function handleSubmit({email,password}) {
+    async function handleSubmit({ email, password }) {
         setError(null);
         setCargando(true);
         try {
-            await login(email,password)
+            await login(email, password)
 
         } catch (err) {
             setError(err.message);
