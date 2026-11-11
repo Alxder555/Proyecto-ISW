@@ -6,6 +6,9 @@ import AppLayout from './layouts/AppLayout';
 import LoginPage from './pages/LoginPage';
 import InicioPage from './pages/InicioPage';
 import EquiposPage from './pages/EquiposPage';
+import GastosPage from "./pages/GastosPage";
+import GananciasPage from "./pages/GananciasPage";
+import ReportesPage from "./pages/ReportesPage";
 import PaginaPendiente from './pages/PaginaPendiente';
 import UsuariosPage from './pages/UsuariosPage';
 import KitsPage from './pages/KitsPage';
@@ -28,8 +31,9 @@ function App() {
                 <Route path="kits" element={<KitsPage />} />
                 <Route path="asignaciones" element={<AsignacionesPage />} />
                 <Route path="eventos" element={<PaginaPendiente titulo="Eventos" />} />
-                <Route path="gastos" element={<PaginaPendiente titulo="Gastos" />} />
-                <Route path="perdidas" element={<PaginaPendiente titulo="Pérdidas" />} />
+                < <Route path="/gastos" element={<GastosPage />} />
+            <Route path="/ganancias" element={<GananciasPage />} />
+            <Route path="/reportes" element={<ReportesPage />} />
                 <Route path="usuarios" element={<UsuariosPage />} />
               </Route>
             </Route>
