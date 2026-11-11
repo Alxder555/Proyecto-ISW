@@ -1,36 +1,252 @@
-### Login correcto (debería dar 200 con token)
 @baseUrl = http://localhost:3000/api
+### Personal: http://146.83.198.35:1258/api
+### Local http://localhost:3000/api
+### Login como administrador
+# @name login
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
+{ "email": "admin@correo.com", "password": "admin123" }
+
+###
+@token = {{login.response.body.token}}
+
+### Crear usuario (201, sin passwordHash en la respuesta)
+POST {{baseUrl}}/usuarios
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
 {
-  "email": "admin@correo.com",
-  "password": "admin123"
+  "email": "Ana@Correo.com",
+  "password": "ClaveDeAna123",
+  "rolInventario": true
 }
 
-### Contraseña incorrecta (debería dar 401)
+### Mismo correo otra vez (409)
+POST {{baseUrl}}/usuarios
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "email": "ana@correo.com", "password": "ClaveDeAna123" }
+
+### Contraseña corta (400)
+POST {{baseUrl}}/usuarios
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "email": "luis@correo.com", "password": "123" }
+
+### Cambiar la contraseña de Ana (204)
+PATCH {{baseUrl}}/usuarios/3/password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "password": "NuevaClaveAna456" }
+
+### Con la contraseña nueva (debe dar 200 con token)
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
+{ "email": "ana@correo.com", "password": "NuevaClaveAna456" }
+
+### Con la contraseña anterior (debe dar 401)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{ "email": "ana@correo.com", "password": "ClaveDeAna123" }
+
+
+### Id inexistente (404)
+PATCH {{baseUrl}}/usuarios/999/password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "password": "NuevaClaveAna456" }
+
+###############################################
+# EQUIPOS
+###############################################
+
+### Crear equipos
+POST {{baseUrl}}/equipos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
 {
-  "email": "admin@correo.com",
-  "password": "otra"
+  "nombre": "Microscopio",
+  "marca": "Olympus",
+  "modelo": "CX23",
+  "cantidad": 1,
+  "precio": 450.00,
+  "estado": "BUEN_ESTADO"
 }
 
-### Correo que no existe (debería dar 401, mismo mensaje que arriba)
-POST {{baseUrl}}/auth/login
+### Crear otro equipos (para pruebas con kits)
+POST {{baseUrl}}/equipos
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "email": "nadie@correo.com",
-  "password": "cualquiera"
+  "nombre": "Balanza",
+  "marca": "Ohaus",
+  "modelo": "PA214",
+  "cantidad": 2,
+  "precio": 320.00,
+  "estado": "BUEN_ESTADO"
 }
 
-### Formato de correo inválido (debería dar 400)
-POST {{baseUrl}}/auth/login
+### Listar todos los equipos
+GET {{baseUrl}}/equipos
+Authorization: Bearer {{token}}
+
+### Obtener un equipos por id
+GET {{baseUrl}}/equipos/1
+Authorization: Bearer {{token}}
+
+### Actualizar un equipos (parcial, ej: cambiar estado)
+PATCH {{baseUrl}}/equipos/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "estado": "BUEN_ESTADO"
+}
+
+### Actualizar un equipos (varios campos)
+PATCH {{baseUrl}}/equipos/1
 Content-Type: application/json
 
 {
-  "email": "no-es-un-correo",
-  "password": "x"
+  "precio": 480.00,
+  "cantidad": 2
+}
+
+
+###############################################
+# KITS
+###############################################
+
+### Crear un kit
+POST {{baseUrl}}/kit
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Kit de Laboratorio A"
+}
+
+### Listar todos los kits (con sus equipos)
+GET {{baseUrl}}/kit
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Obtener un kit por id
+GET {{baseUrl}}/kit/1
+
+### Asignar un equipos existente a un kit
+POST {{baseUrl}}/kit/1/equipos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "equiposId": 1,
+  "motivo": "Ingreso inicial"
+}
+
+### Intentar asignar un equipos dañado/perdido (debería fallar con 409)
+POST {{baseUrl}}/kit/1/equipos
+Content-Type: application/json
+
+{
+  "equiposId": 1
+}
+
+
+###############################################
+# TRABAJOS
+###############################################
+
+### Crear un trabajo
+POST {{baseUrl}}/trabajo
+Content-Type: application/json
+
+{
+  "nombre": "Instalación Cliente XYZ",
+  "cliente": "Empresa XYZ",
+  "fechaInicio": "2026-10-05"
+}
+
+### Crear un trabajo con fecha de fin
+POST {{baseUrl}}/trabajo
+Content-Type: application/json
+
+{
+  "nombre": "Mantenimiento Cliente ABC",
+  "cliente": "Empresa ABC",
+  "fechaInicio": "2026-10-10",
+  "fechaFin": "2026-10-15"
+}
+
+
+###############################################
+# ASIGNACIONES (entrega de kit a un trabajo)
+###############################################
+
+### Crear una asignación (entrega del kit al trabajo)
+POST {{baseUrl}}/asignacion
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "eventoId": 1,
+  "kitId": 1,
+  "detalles": [
+    { "equipoId": 1, "estadoEntrega": "BUEN_ESTADO" }
+  ]
+}
+
+### Intentar asignar un kit ya entregado (debería fallar con 409)
+POST {{baseUrl}}/asignacion
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "trabajoId": 2,
+  "kitId": 1,
+  "detalles": [
+    { "equiposId": 1, "estadoEntrega": "BUEN_ESTADO" }
+  ]
+}
+
+### Registrar devolución de una asignación
+PATCH {{baseUrl}}/asignacion/1/devolucion
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "detalles": [
+    { "equiposId": 1, "estadoDevolucion": "BUEN_ESTADO" },
+    { "equiposId": 2, "estadoDevolucion": "DANADO", "observaciones": "Se rompió el cable durante el uso" }
+  ]
+}
+
+### Intentar devolver una asignación ya devuelta (debería fallar con 409)
+PATCH {{baseUrl}}/asignacion/1/devolucion
+Content-Type: application/json
+
+{
+  "detalles": [
+    { "equiposId": 1, "estadoDevolucion": "BUEN_ESTADO" }
+  ]
+}
+
+### Crear evento
+POST {{baseUrl}}/eventos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre":"Evento1",
+  "ubicacion": "Ubicación1",
+  "fechaInicio": "2026-10-10"
 }
