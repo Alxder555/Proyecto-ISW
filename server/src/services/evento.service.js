@@ -17,3 +17,10 @@ export async function crearEvento({ operadoresIds, kitsIds, ...data }) {
     },
   });
 }
+
+export async function obtenerEventos() {
+  return prisma.evento.findMany({
+    orderBy: { fechaInicio: 'desc' },
+    select: { id: true, nombre: true, ubicacion: true, estado: true, fechaInicio: true },
+  });
+}

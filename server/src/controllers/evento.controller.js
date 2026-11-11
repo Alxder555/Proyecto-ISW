@@ -81,15 +81,10 @@ export const obtenerRentabilidad = async (req, res, next) => {
   }
 };
 
-export const obtenerEventos = async (req, res) => {
+export const obtenerEventos = async (req, res, next) => {
   try {
-    const eventos = await prisma.evento.findMany({
-      include: {
-        operadores: true,
-        kits: true,
-      },
-    });
-    res.json(eventos);
+    const eventos = await eventoService.obtenerEventos();
+    res.status(200).json(eventos);
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al obtener los eventos', error: error.message });
   }
