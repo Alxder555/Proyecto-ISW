@@ -1,45 +1,50 @@
 import React, { useState } from 'react';
+import { Tabs, Paper, Title, Text, Stack, Box } from '@mantine/core';
 import GastosPage from './GastosPage';
 import GananciasPage from './GananciasPage';
 
 const ReportesPage = () => {
-    // Estado para controlar qué pestaña está activa ('ganancias' o 'gastos')
     const [tabActiva, setTabActiva] = useState('ganancias');
 
     return (
-        <div className="p-6 max-w-6xl mx-auto">
-            <h1 className="text-3xl font-bold mb-6">Panel de Contabilidad</h1>
+        <Box style={{ minHeight: '100vh', backgroundColor: '#f8fafc', padding: '2rem 1.5rem' }}>
+            <Stack spacing="xl" style={{ maxWidth: '1152px', margin: '0 auto' }}>
+                
+                {/* Encabezado */}
+                <Box style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '1rem' }}>
+                    <Title order={1} style={{ fontWeight: 700, color: '#1e293b', fontSize: '1.75rem' }}>
+                        Panel Financiero
+                    </Title>
+                    <Text size="sm" c="dimmed" mt={4}>
+                        Gestión y reportes de ganancias y gastos mensuales.
+                    </Text>
+                </Box>
 
-            {/* Barra de Pestañas (Tabs) */}
-            <div className="flex border-b border-gray-200 mb-6">
-                <button
-                    onClick={() => setTabActiva('ganancias')}
-                    className={`py-2 px-6 font-semibold text-lg border-b-2 transition-colors ${
-                        tabActiva === 'ganancias'
-                            ? 'border-blue-600 text-blue-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700'
-                    }`}
-                >
-                    📈 Ganancias Mensuales
-                </button>
-                <button
-                    onClick={() => setTabActiva('gastos')}
-                    className={`py-2 px-6 font-semibold text-lg border-b-2 transition-colors ${
-                        tabActiva === 'gastos'
-                            ? 'border-blue-600 text-blue-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700'
-                    }`}
-                >
-                    📉 Control de Gastos
-                </button>
-            </div>
+                {/* Sistema de Pestañas con Mantine (Corregido a onChange) */}
+                <Tabs value={tabActiva} onChange={setTabActiva} color="indigo">
+                    <Tabs.List mb="md">
+                        <Tabs.Tab value="ganancias">
+                            📈 Ganancias Mensuales
+                        </Tabs.Tab>
+                        <Tabs.Tab value="gastos">
+                            📉 Control de Gastos
+                        </Tabs.Tab>
+                    </Tabs.List>
 
-            {/* Contenido dinámico según la pestaña seleccionada */}
-            <div className="transition-all">
-                {tabActiva === 'ganancias' && <GananciasPage />}
-                {tabActiva === 'gastos' && <GastosPage />}
-            </div>
-        </div>
+                    {/* Tarjeta contenedora de la vista activa */}
+                    <Paper shadow="xs" radius="md" p="xl" withBorder style={{ backgroundColor: '#ffffff' }}>
+                        <Tabs.Panel value="ganancias">
+                            <GananciasPage />
+                        </Tabs.Panel>
+
+                        <Tabs.Panel value="gastos">
+                            <GastosPage />
+                        </Tabs.Panel>
+                    </Paper>
+                </Tabs>
+
+            </Stack>
+        </Box>
     );
 };
 

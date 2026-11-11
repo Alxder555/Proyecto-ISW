@@ -1,4 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { 
+    TextInput, 
+    Select, 
+    NumberInput, 
+    Button, 
+    Table, 
+    Paper, 
+    Title, 
+    Text, 
+    Group, 
+    Stack, 
+    Alert, 
+    LoadingOverlay,
+    Box
+} from '@mantine/core';
 import { obtenerGastos, crearGasto } from '../services/gastoService';
 
 export default function GastosPage() {
@@ -6,7 +21,6 @@ export default function GastosPage() {
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState(null);
 
-    // Estado del formulario de nuevo gasto
     const [formData, setFormData] = useState({
         eventoId: '',
         tipo: 'MOVILIZACION',
@@ -17,7 +31,6 @@ export default function GastosPage() {
         observacion: ''
     });
 
-    // Cargar los gastos al montar el componente
     useEffect(() => {
         cargarDatos();
     }, []);
@@ -35,14 +48,13 @@ export default function GastosPage() {
         }
     };
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+    const handleChange = (field, value) => {
+        setFormData({ ...formData, [field]: value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // Aseguramos que eventoId y monto sean números
             const payload = {
                 ...formData,
                 eventoId: Number(formData.eventoId),
@@ -51,7 +63,6 @@ export default function GastosPage() {
 
             await crearGasto(payload);
             
-            // Limpiar formulario y recargar lista
             setFormData({
                 eventoId: '',
                 tipo: 'MOVILIZACION',
@@ -68,145 +79,148 @@ export default function GastosPage() {
         }
     };
 
-    if (cargando) return <div className="p-6 text-white">Cargando módulo financiero...</div>;
+    if (cargando) {
+        return (
+            <Box style={{ position: 'relative', minHeight: '200px' }}>
+                <LoadingOverlay visible={true} loaderProps={{ color: 'indigo', type: 'bars' }} />
+            </Box>
+        );
+    }
 
     return (
-        <div className="p-6 max-w-6xl mx-auto text-white">
-            <h1 className="text-3xl font-bold mb-6">Gestión Financiera y Reembolsos</h1>
+        <Stack spacing="xl">
+            {/* Encabezado */}
+            <Box style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '1rem' }}>
+                <Title order={2} style={{ fontWeight: 700, color: '#1e293b' }}>Gestión Financiera y Reembolsos</Title>
+                <Text size="sm" c="dimmed">Registra y administra los gastos operativos y viáticos del personal.</Text>
+            </Box>
 
-            {error && <div className="bg-red-500 p-4 rounded mb-4">{error}</div>}
+            {error && (
+                <Alert color="red" variant="light" radius="md">
+                    {error}
+                </Alert>
+            )}
 
-            {/* Formulario de Registro */}
-            <div className="bg-gray-800 p-6 rounded-lg shadow-md mb-8">
-                <h2 className="text-xl font-semibold mb-4">Registrar Nuevo Gasto / Reembolso</h2>
-                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm mb-1">ID de Evento</label>
-                        <input 
-                            type="number" 
-                            name="eventoId" 
-                            value={formData.eventoId} 
-                            onChange={handleChange} 
-                            required 
-                            className="w-full p-2 rounded bg-gray-700 border border-gray-600"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm mb-1">Tipo de Gasto</label>
-                        <select 
-                            name="tipo" 
-                            value={formData.tipo} 
-                            onChange={handleChange} 
-                            className="w-full p-2 rounded bg-gray-700 border border-gray-600"
-                        >
-                            <option value="REMUNERACION">Remuneración Operador</option>
-                            <option value="MOVILIZACION">Movilización (Uber)</option>
-                            <option value="PEAJE">Peaje</option>
-                            <option value="OTRO">Otro</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm mb-1">Monto ($)</label>
-                        <input 
-                            type="number" 
-                            step="0.01" 
-                            name="monto" 
-                            value={formData.monto} 
-                            onChange={handleChange} 
-                            required 
-                            className="w-full p-2 rounded bg-gray-700 border border-gray-600"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm mb-1">Comprobante (URL o Código)</label>
-                        <input 
-                            type="text" 
-                            name="comprobante" 
-                            value={formData.comprobante} 
-                            onChange={handleChange} 
-                            placeholder="Ej. Enlace a boleta o voucher"
-                            className="w-full p-2 rounded bg-gray-700 border border-gray-600"
-                        />
-                    </div>
-                    {formData.tipo === 'MOVILIZACION' && (
-                        <>
-                            <div>
-                                <label className="block text-sm mb-1">Punto de Salida</label>
-                                <input 
-                                    type="text" 
-                                    name="puntoSalida" 
+            {/* Formulario de Registro Estilizado con Paper */}
+            <Paper shadow="xs" radius="md" p="xl" withBorder style={{ backgroundColor: '#f8fafc' }}>
+                <Title order={4} mb="lg" style={{ color: '#334155' }}>
+                    Registrar Nuevo Gasto / Reembolso
+                </Title>
+                
+                <form onSubmit={handleSubmit}>
+                    <Stack spacing="md">
+                        <Group grow preventGrowOverflow={false} breakpoints={{ maxWidth: 'sm', cols: 1 }}>
+                            <TextInput 
+                                label="ID de Evento" 
+                                placeholder="Ej. 102"
+                                type="number"
+                                value={formData.eventoId} 
+                                onChange={(e) => handleChange('eventoId', e.target.value)} 
+                                required 
+                            />
+                            <Select
+                                label="Tipo de Gasto"
+                                value={formData.tipo}
+                                onChange={(value) => handleChange('tipo', value)}
+                                data={[
+                                    { value: 'REMUNERACION', label: 'Remuneración Operador' },
+                                    { value: 'MOVILIZACION', label: 'Movilización (Uber)' },
+                                    { value: 'PEAJE', label: 'Peaje' },
+                                    { value: 'OTRO', label: 'Otro' },
+                                ]}
+                            />
+                        </Group>
+
+                        <Group grow preventGrowOverflow={false} breakpoints={{ maxWidth: 'sm', cols: 1 }}>
+                            <TextInput 
+                                label="Monto ($)" 
+                                placeholder="0.00"
+                                type="number"
+                                step="0.01"
+                                value={formData.monto} 
+                                onChange={(e) => handleChange('monto', e.target.value)} 
+                                required 
+                            />
+                            <TextInput 
+                                label="Comprobante (URL o Código)" 
+                                placeholder="Ej. Enlace a boleta o voucher"
+                                value={formData.comprobante} 
+                                onChange={(e) => handleChange('comprobante', e.target.value)} 
+                            />
+                        </Group>
+                        
+                        {formData.tipo === 'MOVILIZACION' && (
+                            <Group grow preventGrowOverflow={false} breakpoints={{ maxWidth: 'sm', cols: 1 }}>
+                                <TextInput 
+                                    label="Punto de Salida" 
+                                    placeholder="Dirección de origen"
                                     value={formData.puntoSalida} 
-                                    onChange={handleChange} 
-                                    className="w-full p-2 rounded bg-gray-700 border border-gray-600"
+                                    onChange={(e) => handleChange('puntoSalida', e.target.value)} 
                                 />
-                            </div>
-                            <div>
-                                <label className="block text-sm mb-1">Punto de Llegada</label>
-                                <input 
-                                    type="text" 
-                                    name="puntoLlegada" 
+                                <TextInput 
+                                    label="Punto de Llegada" 
+                                    placeholder="Dirección de destino"
                                     value={formData.puntoLlegada} 
-                                    onChange={handleChange} 
-                                    className="w-full p-2 rounded bg-gray-700 border border-gray-600"
+                                    onChange={(e) => handleChange('puntoLlegada', e.target.value)} 
                                 />
-                            </div>
-                        </>
-                    )}
-                    <div className="md:col-span-2">
-                        <label className="block text-sm mb-1">Observación</label>
-                        <input 
-                            type="text" 
-                            name="observacion" 
+                            </Group>
+                        )}
+                        
+                        <TextInput 
+                            label="Observación" 
+                            placeholder="Notas adicionales opcionales..."
                             value={formData.observacion} 
-                            onChange={handleChange} 
-                            className="w-full p-2 rounded bg-gray-700 border border-gray-600"
+                            onChange={(e) => handleChange('observacion', e.target.value)} 
                         />
-                    </div>
-                    <div className="md:col-span-2">
-                        <button 
-                            type="submit" 
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded transition"
-                        >
-                            Guardar Registro Financiero
-                        </button>
-                    </div>
+                        
+                        <Box pt="sm">
+                            <Button type="submit" color="indigo" radius="md">
+                                Guardar Registro Financiero
+                            </Button>
+                        </Box>
+                    </Stack>
                 </form>
-            </div>
+            </Paper>
 
             {/* Listado de Gastos */}
-            <div className="bg-gray-800 p-6 rounded-lg shadow-md">
-                <h2 className="text-xl font-semibold mb-4">Historial de Gastos y Reembolsos</h2>
+            <Box>
+                <Title order={4} mb="md" style={{ color: '#334155' }}>Historial de Gastos y Reembolsos</Title>
+                
                 {gastos.length === 0 ? (
-                    <p className="text-gray-400">No hay registros financieros todavía.</p>
+                    <Paper p="xl" radius="md" withBorder style={{ textAlign: 'center', backgroundColor: '#f8fafc' }}>
+                        <Text size="sm" c="dimmed">No hay registros financieros todavía.</Text>
+                    </Paper>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
+                    <Paper shadow="xs" radius="md" withBorder style={{ overflow: 'hidden' }}>
+                        <Table verticalSpacing="sm" horizontalSpacing="md">
                             <thead>
-                                <tr className="border-b border-gray-700 text-gray-400">
-                                    <th className="p-3">Fecha</th>
-                                    <th className="p-3">Tipo</th>
-                                    <th className="p-3">Monto</th>
-                                    <th className="p-3">Evento ID</th>
-                                    <th className="p-3">Detalles</th>
+                                <tr style={{ backgroundColor: '#f1f5f9' }}>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Monto</th>
+                                    <th>Evento ID</th>
+                                    <th>Detalles</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {gastos.map((g) => (
-                                    <tr key={g.id} className="border-b border-gray-700 hover:bg-gray-750">
-                                        <td className="p-3">{new Date(g.fecha).toLocaleDateString()}</td>
-                                        <td className="p-3 font-medium text-blue-400">{g.tipo}</td>
-                                        <td className="p-3">${g.monto}</td>
-                                        <td className="p-3">{g.eventoId}</td>
-                                        <td className="p-3 text-sm text-gray-300">
-                                            {g.puntoSalida ? `${g.puntoSalida} ➔ ${g.puntoLlegada}` : (g.observacion || 'Sin detalles')}
+                                    <tr key={g.id}>
+                                        <td><Text size="sm" c="dimmed">{new Date(g.fecha).toLocaleDateString()}</Text></td>
+                                        <td><Text size="sm" fw={600} c="indigo">{g.tipo}</Text></td>
+                                        <td><Text size="sm" fw={500}>${g.monto}</Text></td>
+                                        <td><Text size="sm" c="dimmed">#{g.eventoId}</Text></td>
+                                        <td>
+                                            <Text size="sm" c="dimmed">
+                                                {g.puntoSalida ? `${g.puntoSalida} ➔ ${g.puntoLlegada}` : (g.observacion || 'Sin detalles')}
+                                            </Text>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
-                        </table>
-                    </div>
+                        </Table>
+                    </Paper>
                 )}
-            </div>
-        </div>
+            </Box>
+        </Stack>
     );
 }
