@@ -13,6 +13,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route element={<RutaProtegida />}>
             <Route path="/equipos" element={<EquiposPage />} />
+            <Route path="/gastos" element={<GastosPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/equipos" replace />} />
