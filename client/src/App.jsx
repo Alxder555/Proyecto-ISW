@@ -1,6 +1,7 @@
 import LoginPage from "./pages/LoginPage";
 import { AuthProvider } from "./services/AuthContext";
 import EquiposPage from "./pages/EquiposPage"
+import GastosPage from "./pages/GastosPage";
 import RutaProtegida from "./components/RutaProtegida"
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
