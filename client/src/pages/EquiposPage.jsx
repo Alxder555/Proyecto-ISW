@@ -140,5 +140,3 @@ function EquiposPage() {
     </Stack>
   );
 }
-
-export default EquiposPage;
