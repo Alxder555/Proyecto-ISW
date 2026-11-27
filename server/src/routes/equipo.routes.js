@@ -1,9 +1,12 @@
 import { Router } from "express";
 import { crearEquipo, listarEquipos, obtenerEquipo, actualizarEquipo } from "../controllers/equipo.controller.js";
 import { validate } from "../middlewares/validate.middleware.js";
+import { requierePrivilegio } from "../middlewares/auth.middleware.js";
 import { crearEquipoSchema, actualizarEquipoSchema, idParamSchema } from "../schemas/equipo.schema.js";
 
 const router = Router();
+
+router.use(requierePrivilegio('INVENTARIO', 'ADMINISTRADOR'))
 
 router.post('/', validate(crearEquipoSchema), crearEquipo);
 router.get('/', listarEquipos);

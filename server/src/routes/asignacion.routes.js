@@ -6,9 +6,11 @@ import { requierePrivilegio } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
+router.use(requierePrivilegio('INVENTARIO', 'ADMINISTRADOR'))
+
 router.post('/', validate(crearAsignacionSchema), crearAsignacion);
 router.patch('/:id/devolucion', validate(idParamSchema, 'params'), validate(registrarDevolucionSchema), registrarDevolucion);
-router.get('/', requierePrivilegio('INVENTARIO', 'SUPERVISOR'), listarAsignaciones);
+router.get('/', listarAsignaciones);
 
 
 export default router;

@@ -13,7 +13,9 @@ import { requierePrivilegio } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
-router.get('/', requierePrivilegio('INVENTARIO', 'SUPERVISOR'), obtenerEventos);
+router.use(requierePrivilegio('INVENTARIO', 'ADMINISTRADOR'))
+
+router.get('/', obtenerEventos);
 router.get('/:id', obtenerEventoPorId);
 router.post('/', validate(crearEventoSchema),crearEvento);
 router.put('/:id', actualizarEvento);

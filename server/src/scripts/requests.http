@@ -1,12 +1,15 @@
 @baseUrl = http://localhost:3000/api
 ### Personal: http://146.83.198.35:1258/api
 ### Local http://localhost:3000/api
+### Produccion http://146.83.198.35:1522/api
 ### Login como administrador
+### { "email": "admin@correo.com", "password": "admin123" }
+### { "email": "Ana@Correo.com", "password": "ClaveDeAna123" }
 # @name login
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
-{ "email": "admin@correo.com", "password": "admin123" }
+{ "email": "2@correo.com", "password": "pass1234" }
 
 ###
 @token = {{login.response.body.token}}
@@ -17,9 +20,9 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "email": "Ana@Correo.com",
-  "password": "ClaveDeAna123",
-  "rolInventario": true
+  "email": "2@correo.com",
+  "password": "pass1234",
+  "rolSupervisor": true
 }
 
 ### Mismo correo otra vez (409)
@@ -163,11 +166,12 @@ Content-Type: application/json
 
 
 ###############################################
-# TRABAJOS
+# EVENTOS
 ###############################################
 
 ### Crear un trabajo
-POST {{baseUrl}}/trabajo
+POST {{baseUrl}}/eventos
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -177,8 +181,9 @@ Content-Type: application/json
 }
 
 ### Crear un trabajo con fecha de fin
-POST {{baseUrl}}/trabajo
+POST {{baseUrl}}/eventos
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nombre": "Mantenimiento Cliente ABC",
@@ -232,6 +237,7 @@ Content-Type: application/json
 
 ### Intentar devolver una asignación ya devuelta (debería fallar con 409)
 PATCH {{baseUrl}}/asignacion/1/devolucion
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -250,3 +256,8 @@ Content-Type: application/json
   "ubicacion": "Ubicación1",
   "fechaInicio": "2026-10-10"
 }
+
+### Obtener eventos
+GET {{baseUrl}}/eventos
+Authorization: Bearer {{token}}
+Content-Type: application/json
