@@ -1,12 +1,15 @@
 import {
-  IconAlertTriangle,
+  IconListCheck,
   IconBox,
   IconCalendarEvent,
   IconHome,
   IconPackages,
   IconReceipt,
   IconTruckDelivery,
+  IconUser,
   IconUsers,
+  IconTrendingUp,
+  IconCurrencyDollar
 } from '@tabler/icons-react';
 
 export const INICIO = { label: 'Inicio', to: '/inicio', icon: IconHome };
@@ -43,10 +46,24 @@ export const SECCIONES = [
     titulo: 'Operación',
     items: [
       {
+        label: 'Dashboard',
+        to: '/dashboard',
+        icon: IconListCheck,
+        descripcion: 'Panel de control',
+        privilegios: ['rolSupervisor'],
+      },
+      {
         label: 'Eventos',
         to: '/eventos',
         icon: IconCalendarEvent,
         descripcion: 'Crear y gestionar eventos',
+        privilegios: ['rolSupervisor'],
+      },
+      {
+        label: 'Operadores',
+        to: '/operadores',
+        icon: IconUser,
+        descripcion: 'Contacto y estado de disponibilidad para terreno',
         privilegios: ['rolSupervisor'],
       },
     ],
@@ -57,15 +74,22 @@ export const SECCIONES = [
       {
         label: 'Gastos',
         to: '/gastos',
-        icon: IconReceipt,
+        icon: IconCurrencyDollar ,
         descripcion: 'Registrar y revisar gastos por evento',
         privilegios: ['rolContador'],
       },
       {
-        label: 'Pérdidas',
-        to: '/perdidas',
-        icon: IconAlertTriangle,
-        descripcion: 'Registrar pérdidas de equipos',
+        label: 'Ganancias',
+        to: '/ganancias',
+        icon: IconTrendingUp ,
+        descripcion: 'Ganancias mensuales',
+        privilegios: ['rolContador'],
+      },
+      {
+        label: 'Reportes',
+        to: '/reportes',
+        icon: IconReceipt,
+        descripcion: 'Reporte mensual',
         privilegios: ['rolContador'],
       },
     ],

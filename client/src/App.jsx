@@ -33,11 +33,11 @@ function App() {
                 <Route path="kits" element={<KitsPage />} />
                 <Route path="asignaciones" element={<AsignacionesPage />} />
                 <Route path="eventos" element={<PaginaPendiente titulo="Eventos" />} />
-                <Route path="/gastos" element={<GastosPage />} />
-                <Route path="/ganancias" element={<GananciasPage />} />
-                <Route path="/reportes" element={<ReportesPage />} />
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/operadores" element={<OperadoresPage />} /> 
+                <Route path="gastos" element={<GastosPage />} />
+                <Route path="ganancias" element={<GananciasPage />} />
+                <Route path="reportes" element={<ReportesPage />} />
+                <Route path="dashboard" element={<DashboardPage />} />
+                <Route path="operadores" element={<OperadoresPage />} /> 
                 <Route path="usuarios" element={<UsuariosPage />} />
               </Route>
             </Route>
